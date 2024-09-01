@@ -255,18 +255,25 @@ def __main__() -> int:
 			try:
 				dice = subprocess.run(shlex.split("podman exec xivomega ping 204.2.29.7 -c 5"),check=True,capture_output=True)
 				if dice.returncode == 0:
+					print(dice.returncode)
 					print("Network Established")
 					ctx = 0
 				else:
 					print("Retrying Connection")
 					ctx = ctx + 1
-					if(ctx > 2):
+					subprocess.run(shlex.split("podman exec xivomega iptables -t nat -F POSTROUTING"),check=True,capture_output=True)
+					subprocess.run(shlex.split("podman exec xivomega /home/iptset.sh"),check=True,capture_output=True)
+					if(ctx > 5):
+						print(dice.returncode)
 						raise ConnectionFailedError
 			except subprocess.CalledProcessError as e:
-				#rc = -1
-				#print(e.stderr.decode())
-				#print("Retrying Connection...")
-				raise ConnectionFailedError
+				print("Retrying Connection")
+				ctx = ctx + 1
+				subprocess.run(shlex.split("podman exec xivomega iptables -t nat -F POSTROUTING"),check=True,capture_output=True)
+				subprocess.run(shlex.split("podman exec xivomega /home/iptset.sh"),check=True,capture_output=True)
+				if(ctx > 5):
+					print(dice.returncode)
+					raise ConnectionFailedError
 
 		print("Mitigation in 15 seconds...")
 
@@ -287,14 +294,14 @@ def __main__() -> int:
 	except ConnectionFailedError:
 		print("Connection could not be established correctly.")
 		print("Try again after program closes")
-		rc = 0
+		rc = 4
 	
 	except KeyboardInterrupt:
 		pass
 	
 	finally:
 		#Close routine - do same thing as xivostop
-		if rc == 0:
+		if rc >= 0:
 			#remov  e routes
 			print("Terminating Mitigation Protocol and XIVOmega")
 			#add routes to the game's IPs in the host
