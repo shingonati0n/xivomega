@@ -50,8 +50,9 @@ This program creates 2 virtual network adapters to allow the container to commun
 
 Special Thanks:
 
- Soreepeong for creating the original Mitigator script and Alexander
- Bankjaneo for inspiring this by creating the Docker version of the mitigator. 
+- Soreepeong for creating the original Mitigator script and Alexander
+- Bankjaneo for inspiring this by creating the Docker version of the mitigator.
+- bnnuy for testing 
 
 License
 -------
