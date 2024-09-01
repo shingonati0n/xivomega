@@ -182,7 +182,7 @@ def __main__() -> int:
 		
 		print("Creating podman container")
 		
-		#create podman container - assigns by default the last IP address from host subnet. 
+		#create podman container - assigns IP 10.88.0.7 because yes
 		#todo: manually assign via config file
 		#desired end state: get dhcp - maybe in the future as podman makes it available
 		
@@ -204,7 +204,7 @@ def __main__() -> int:
 			print(e.stderr.decode())
 			rc = -1
 		
-		#connect created container to podman default bridge network - IP will always be 10.88.0.7 - because yes
+		#connect created container to podman ipvlan network - using IP address from either default or config file
 		hclosew = f"podman network connect xivlanc xivomega --ip={lip}"
 		try:
 			hclosew = subprocess.run(shlex.split(hclosew),check=True,capture_output=True)
