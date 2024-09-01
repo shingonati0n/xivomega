@@ -265,8 +265,8 @@ def __main__() -> int:
 			except subprocess.CalledProcessError as e:
 				#rc = -1
 				#print(e.stderr.decode())
-				print("Retrying Connection...")
-				
+				#print("Retrying Connection...")
+				raise ConnectionFailedError
 
 		print("Mitigation in 15 seconds...")
 
