@@ -7,6 +7,11 @@ Troubled because XIVAlexander doesn't run natively on SteamOS and don't want to 
 
 Don't have another PC where you can run XIVMitmLatencyMitigator?? 
 
+![20240831184558_1](https://github.com/user-attachments/assets/9ea2f37b-22dd-4286-8109-de6dd59d22ef)
+
+
+![20240831184705_1](https://github.com/user-attachments/assets/cfdad1ff-7e45-4f40-85c5-9c995176e643)
+
 This solution is for you!! - Run MXIVMitmLatencyMitigator on your Steam Deck with a container acting as bare metal man-in-the-middle. 
 
 This Python Script relies on Podman to create and run the container - Podman is bundled by default in Steam Deck as part of Distrobox. 
