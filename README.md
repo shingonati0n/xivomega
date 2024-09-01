@@ -3,12 +3,11 @@ XIVOmega - Latency Mitigator for Steam Deck based on XIVMitmLatencyMitigator
 
 Playing Final Fantasy XIV and unable to doubleweave things?? 
 
-Troubled because XIVAlexander doesn't run natively on SteamOS and don't want to install Windows??
+Troubled because [XivAlexander](https://github.com/Soreepeong/XivAlexander) doesn't run natively on SteamOS and don't want to install Windows??
 
-Don't have another PC where you can run XIVMitmLatencyMitigator?? 
+Don't have another PC where you can run [XivMitmLatencyMitigator](https://github.com/Soreepeong/XivMitmLatencyMitigator)?? 
 
 ![20240831184558_1](https://github.com/user-attachments/assets/9ea2f37b-22dd-4286-8109-de6dd59d22ef)
-
 
 ![20240831184705_1](https://github.com/user-attachments/assets/cfdad1ff-7e45-4f40-85c5-9c995176e643)
 
@@ -52,6 +51,12 @@ This program creates 2 virtual network adapters to allow the container to commun
  - Each got assigned the last 2 IP addresses from the network the Deck is connected in
 
  If you need to customize the IP address - you can do so from the config.ini file inside the /xivomega folder - just change the values from default - to the desired IP addresses - make sure both are part of the same subnet. 
+
+Known Isues
+-----------
+
+If attempt to establish connection fails via ping, the mitigator loops endlessly which can cause the Steam Deck to crash. If a connection is not established on the first try, the program will close and will prompt to try again. On 2nd try connection gets established correctly. 
+
 
 Special Thanks:
 
