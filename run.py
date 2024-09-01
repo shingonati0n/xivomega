@@ -254,7 +254,7 @@ def __main__() -> int:
 		while(ctx > 0):
 			try:
 				dice = subprocess.run(shlex.split("podman exec xivomega ping 204.2.29.7 -c 5"),check=True,capture_output=True)
-				if cosmo.returncode == 0:
+				if dice.returncode == 0:
 					print("Network Established")
 					ctx = 0
 				else:
@@ -327,7 +327,7 @@ def __main__() -> int:
 			try:
 				bworld = subprocess.run(shlex.split("podman rm xivomega"),check=True,capture_output=True)
 				if bworld.returncode == 0:
-					print("Removing Container IPVlan")
+					print("XIVOmega Container removed")
 			except subprocess.CalledProcessError as e:
 				print(e.stderr.decode())
 			try:
