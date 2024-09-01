@@ -1,7 +1,7 @@
 XIVOmega - Latency Mitigator for Steam Deck based on XIVMitmLatencyMitigator
 ----------------------------------------------------------------------------
 
-Playing Final Fantasy XIV and unable to doubleweave things?? 
+Playing Final Fantasy XIV on Steam Deck and unable to doubleweave things?? 
 
 Troubled because [XivAlexander](https://github.com/Soreepeong/XivAlexander) doesn't run natively on SteamOS and don't want to install Windows??
 
