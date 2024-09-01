@@ -27,13 +27,13 @@ For Game Mode, it's highly recommended to have Decky Loader installed with the D
 	- Open Konsole and and run the installer (**sudo python /home/deck/xivomega/installer.py**) - this will install the binary 
 	so execution is easier later
 	- This can run in both Desktop and Game Modes:
-		If using Desktop Mode: 
+	- If using Desktop Mode: 
 			- Open Konsole and execute **sudo xivomega** and wait until the mitigator starts running -
 			- Open FFXIV and game
-		If using from Game Mode with Decky Terminal:
+	- If using from Game Mode with Decky Terminal:
 		    - Open the QAM (three-dotted button under the right trackpad) and open a Decky Terminal - then execute **sudo xivomega** - wait until the mitigator starts running 
 		    - Press the Steam Button and open your launcher and game
-		If using from Game Mode without Decky Terminal: 
+	- If using from Game Mode without Decky Terminal: 
 			- Open Konsole from your library - from inside the Konsole, run:
 				- run **sudo xivomega** - wait until the mitigator starts running
 			- Press the Steam Button and open your launcher and game
