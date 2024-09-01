@@ -11,7 +11,7 @@ Don't have another PC where you can run [XivMitmLatencyMitigator](https://github
 
 ![20240831184705_1](https://github.com/user-attachments/assets/cfdad1ff-7e45-4f40-85c5-9c995176e643)
 
-This solution is for you!! - Run MXIVMitmLatencyMitigator on your Steam Deck with a container acting as bare metal man-in-the-middle. 
+This solution is for you!! - Run XivMitmLatencyMitigator on your Steam Deck with a container acting as bare metal man-in-the-middle. 
 
 This Python Script relies on Podman to create and run the container - Podman is bundled by default in Steam Deck as part of Distrobox. 
 
