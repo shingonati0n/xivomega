@@ -53,8 +53,8 @@ Special Thanks:
  Soreepeong for creating the original Mitigator script and Alexander
  Bankjaneo for inspiring this by creating the Docker version of the mitigator. 
 
-
-License 
+License
+-------
 
 Apache License 2.0
 
