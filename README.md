@@ -9,6 +9,8 @@ Troubled because [XivAlexander](https://github.com/Soreepeong/XivAlexander) does
 
 Don't have another PC where you can run [XivMitmLatencyMitigator](https://github.com/Soreepeong/XivMitmLatencyMitigator)?? 
 
+![xivom1](https://github.com/user-attachments/assets/ee3e43e9-e1b2-4ddc-a945-f763b42b0d05)
+
 ![20240831184558_1](https://github.com/user-attachments/assets/9ea2f37b-22dd-4286-8109-de6dd59d22ef)
 
 ![20240831184705_1](https://github.com/user-attachments/assets/cfdad1ff-7e45-4f40-85c5-9c995176e643)
