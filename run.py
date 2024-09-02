@@ -12,12 +12,124 @@ import time
 import io
 import configparser
 
-#region aux functions
-#read config file
-
 #pth = os.path.dirname(__file__) + "/"
 pth = "/home/deck/xivomega/"
 
+#region aux functions and classes
+
+class WorkerClass:
+	def SetRoutes(self,rt14):
+		for r in rt14:
+			way = f"ip route add {r} via 10.88.0.7"
+			nav = subprocess.run(shlex.split(way),check=True,capture_output=True)
+			try:
+		   		if nav.returncode==0:
+		   			print(f"route to {r} added")
+			except subprocess.CalledProcessError as e:
+				print(e.stderr.decode())
+
+	def ClearNetavarkRules(self):
+		subprocess.run(shlex.split("iptables -F INPUT"),check=True,capture_output=True)
+		subprocess.run(shlex.split("iptables -F FORWARD"),check=True,capture_output=True)
+		subprocess.run(shlex.split("iptables -F OUTPUT"),check=True,capture_output=True)
+
+	def PrintLogo(self):
+		subprocess.call(pth + "titleCard.sh")
+
+	def ReconnectProtocol(self):
+		subprocess.run(shlex.split("podman restart xivomega"),check=True,capture_output=True)
+		subprocess.run(shlex.split("podman exec xivomega iptables -t nat -F POSTROUTING"),check=True,capture_output=True)
+		subprocess.run(shlex.split("podman exec xivomega /home/iptset.sh"),check=True,capture_output=True)
+
+	def CDTimer(self):
+		for i in range(10, 0, -1):
+			print(i, end = ' \r')
+			time.sleep(1)
+
+	def CreateHostAdapter(self,virtual_ip,netbits,broadcast):
+		ipvl1 = f"ip link add xivlanh link wlan0 type ipvlan mode l2"
+		ipvl2 = f"ip addr add {virtual_ip}/{netbits} brd {broadcast} dev xivlanh"
+		ipvl3 = f"ip link set xivlanh up"
+		
+		try:
+			ipvlh1 = subprocess.run(shlex.split(ipvl1),check=True,capture_output=True)
+			if ipvlh1.returncode == 0:
+				print("host ipvlan interface created")
+		except subprocess.CalledProcessError as e:
+			print(e.stderr.decode())
+		
+		try:
+			ipvlh2 = subprocess.run(shlex.split(ipvl2),check=True,capture_output=True)
+			if ipvlh2.returncode == 0:
+				print(f"host ipvlan interface IP is {virtual_ip}")
+		except subprocess.CalledProcessError as e:
+			print(e.stderr.decode())
+		
+		try:
+			ipvlh3 = subprocess.run(shlex.split(ipvl3),check=True,capture_output=True)
+			if ipvlh3.returncode == 0:
+				print("host ipvlan interface is up")
+		except subprocess.CalledProcessError as e:
+			print(e.stderr.decode())
+
+	def SelfDestructProtocol(self):
+		print("Terminating Mitigation Protocol and XIVOmega")
+		for r in roadsto14:
+			way = f"ip route del {r} via 10.88.0.7"
+			nav = subprocess.run(shlex.split(way),check=True,capture_output=True)
+			try:
+		   		if nav.returncode==0:
+		   			print(f"route to {r} deleted")
+			except subprocess.CalledProcessError as e:
+					print(e.stderr.decode())
+		try:
+			panto = subprocess.run(shlex.split("podman stop xivomega"),check=True,capture_output=True)
+			if panto.returncode == 0:
+				print("XIVOmega Container Stopped")
+		except subprocess.CalledProcessError as e:
+			print(e.stderr.decode())
+		try:
+			atomic = subprocess.run(shlex.split("podman network disconnect xivlanc xivomega"),check=True,capture_output=True)
+			if atomic.returncode == 0:
+				print("XIVOmega IPVlan Disconnected")
+		except subprocess.CalledProcessError as e:
+			print(e.stderr.decode())
+		try:
+			flame = subprocess.run(shlex.split("podman network rm xivlanc"),check=True,capture_output=True)
+			if flame.returncode == 0:
+				print("XIVOmega IPVlan Removed")
+		except subprocess.CalledProcessError as e:
+			print(e.stderr.decode())
+		try:
+			bworld = subprocess.run(shlex.split("podman rm xivomega"),check=True,capture_output=True)
+			if bworld.returncode == 0:
+				print("XIVOmega Container removed")
+		except subprocess.CalledProcessError as e:
+			print(e.stderr.decode())
+		try:
+			lanhdie = subprocess.run(shlex.split("ip link set xivlanh down"),check=True,capture_output=True)
+			if lanhdie.returncode == 0:
+				print("Host IPVlan turned off")
+		except subprocess.CalledProcessError as e:
+			print(e.stderr.decode())
+		try:
+			lanhrm = subprocess.run(shlex.split("ip link del xivlanh"),check=True,capture_output=True)
+			if lanhrm.returncode == 0:
+				print("Host IPVlan removed")
+		except subprocess.CalledProcessError as e:
+			print(e.stderr.decode())
+		print("All done - goodbye")
+
+#read config file
+
+#get subnet mask and subnet
+def cidr_to_netmask(cidr):
+	network, net_bits = cidr.split('/')
+	host_bits = 32 - int(net_bits)
+	netmask = socket.inet_ntoa(struct.pack('!I',(1 << 32) - (1 << host_bits)))
+	return network, netmask
+
+#get config files parms
 def read_config():
 	cfg = configparser.ConfigParser()
 	cfg.read(pth + 'config.ini')
@@ -34,7 +146,6 @@ def read_config():
 	return cfg_val
 
 #validate IP Address
-
 def is_valid_ipv4_address(address):
     try:
         socket.inet_pton(socket.AF_INET, address)
@@ -81,6 +192,7 @@ def __main__() -> int:
 		print("This program requires at least python 3.8")
 		return -1
 
+	omegaBeetle = WorkerClass()
 	rc = 0
 
 	try:
@@ -91,13 +203,6 @@ def __main__() -> int:
 		ipv4 = os.popen('ip addr show wlan0').read().split("inet ")[1].split(" brd")[0] 
 		#print(ipv4)
 		ipv4n, netb = ipv4.split('/')
-		
-		#get subnet mask and subnet
-		def cidr_to_netmask(cidr):
-			network, net_bits = cidr.split('/')
-			host_bits = 32 - int(net_bits)
-			netmask = socket.inet_ntoa(struct.pack('!I',(1 << 32) - (1 << host_bits)))
-			return network, netmask
 		
 		#print(cidr_to_netmask(ipv4)[1])
 		subn = ipaddress.ip_network(cidr_to_netmask(ipv4)[0]+'/'+cidr_to_netmask(ipv4)[1], strict=False)
@@ -135,14 +240,7 @@ def __main__() -> int:
 		brd = str(nt.broadcast_address)
 
 		#create podman network
-		#This is using ipvlan - as Freddie said - AND NOW I KNOW!
-		# What made this so hard
-		# - As per kernel rules, a virtual interface cannot communicate with its parent interface
-		# - this means IPVlan alone won't do the job
-		# - Bridge could probably do alone but that needs meddling with a lot of iptables rules and stuff
-		# - So we use both! Since Podman Default Bridge is not a child interface of wlan0, its valid to move traffic there
-		# - and back thru ipvlan to the internet
-		
+		#This is using ipvlan 		
 		print("Welcome to XIVOmega v.0.01a")
 		podnet = f"podman network create --subnet={sdsubn} --gateway={sdgway} --driver=ipvlan -o parent=wlan0 xivlanc"
 		try:
@@ -151,35 +249,11 @@ def __main__() -> int:
 				print("podman ipvlan network xivnet has been created")
 		except subprocess.CalledProcessError as e: 
 			print(e.stderr.decode())
+			rc = -1
 		
 		# create host ipvlan adapter
-		
-		ipvl1 = f"ip link add xivlanh link wlan0 type ipvlan mode l2"
-		ipvl2 = f"ip addr add {vip}/{netb} brd {brd} dev xivlanh"
-		ipvl3 = f"ip link set xivlanh up"
-		
-		try:
-			ipvlh1 = subprocess.run(shlex.split(ipvl1),check=True,capture_output=True)
-			if ipvlh1.returncode == 0:
-				print("host ipvlan interface created")
-		except subprocess.CalledProcessError as e:
-			print(e.stderr.decode())
-		
-		try:
-			ipvlh2 = subprocess.run(shlex.split(ipvl2),check=True,capture_output=True)
-			if ipvlh2.returncode == 0:
-				print(f"host ipvlan interface IP is {vip}")
-		except subprocess.CalledProcessError as e:
-			print(e.stderr.decode())
-		
-		try:
-			ipvlh3 = subprocess.run(shlex.split(ipvl3),check=True,capture_output=True)
-			if ipvlh3.returncode == 0:
-				print("host ipvlan interface is up")
-		except subprocess.CalledProcessError as e:
-			print(e.stderr.decode())
-		
-		
+		omegaBeetle.CreateHostAdapter(vip,netb,brd)
+				
 		print("Creating podman container")
 		
 		#create podman container - assigns IP 10.88.0.7 because yes
@@ -214,8 +288,9 @@ def __main__() -> int:
 			print(e.stderr.decode())
 		
 		#Start
-		#print logo 
-		subprocess.call(pth + "titleCard.sh")
+		#print logo
+		omegaBeetle.PrintLogo() 
+		#subprocess.call(pth + "titleCard.sh")
 		try:
 			hworld = subprocess.run(shlex.split("podman start xivomega"),check=True,capture_output=True)
 			if hworld.returncode == 0:
@@ -224,21 +299,11 @@ def __main__() -> int:
 			print(e.stderr.decode())
 		
 		#add routes to the game's IPs in the host
-		for r in roadsto14:
-			way = f"ip route add {r} via 10.88.0.7"
-			nav = subprocess.run(shlex.split(way),check=True,capture_output=True)
-			try:
-		   		if nav.returncode==0:
-		   			print(f"route to {r} added")
-			except subprocess.CalledProcessError as e:
-					print(e.stderr.decode())
-		
+		omegaBeetle.SetRoutes(roadsto14)
+
 		#run mitigator on container - 
 		#remove iptables rles from podman
-		subprocess.run(shlex.split("iptables -F INPUT"),check=True,capture_output=True)
-		subprocess.run(shlex.split("iptables -F FORWARD"),check=True,capture_output=True)
-		subprocess.run(shlex.split("iptables -F OUTPUT"),check=True,capture_output=True)
-
+		omegaBeetle.ClearNetavarkRules()
 		print("Activating mitigation protocol")
 		
 		#run iptables on podman
@@ -255,29 +320,28 @@ def __main__() -> int:
 			try:
 				dice = subprocess.run(shlex.split("podman exec xivomega ping 204.2.29.7 -c 5"),check=True,capture_output=True)
 				if dice.returncode == 0:
-					print(dice.returncode)
 					print("Network Established")
 					ctx = 0
 				else:
-					print("Retrying Connection")
+					print("Retrying Connection..")
 					ctx = ctx + 1
-					subprocess.run(shlex.split("podman exec xivomega iptables -t nat -F POSTROUTING"),check=True,capture_output=True)
-					subprocess.run(shlex.split("podman exec xivomega /home/iptset.sh"),check=True,capture_output=True)
+					omegaBeetle.ReconnectProtocol()
+					omegaBeetle.ClearNetavarkRules()
+					omegaBeetle.SetRoutes(roadsto14)
 					if(ctx > 5):
-						print(dice.returncode)
 						raise ConnectionFailedError
 			except subprocess.CalledProcessError as e:
-				print("Retrying Connection")
+				print("Retrying Connection...")
 				ctx = ctx + 1
-				subprocess.run(shlex.split("podman exec xivomega iptables -t nat -F POSTROUTING"),check=True,capture_output=True)
-				subprocess.run(shlex.split("podman exec xivomega /home/iptset.sh"),check=True,capture_output=True)
+				omegaBeetle.ReconnectProtocol()
+				omegaBeetle.ClearNetavarkRules()
+				omegaBeetle.SetRoutes(roadsto14)
 				if(ctx > 5):
-					print(dice.returncode)
 					raise ConnectionFailedError
 
-		print("Mitigation in 15 seconds...")
-
-		time.sleep(15)
+		print("Mitigation in 10 seconds...")
+		omegaBeetle.CDTimer()
+		print("MITIGATOR EXECUTING")
 		#execute mitigator
 		omega = f"podman exec -it xivomega /home/omega_alpha.sh"
 		Popen(shlex.split(omega), stdout=sys.stdout, stderr=sys.stderr).communicate()
@@ -303,54 +367,7 @@ def __main__() -> int:
 		#Close routine - do same thing as xivostop
 		if rc >= 0:
 			#remov  e routes
-			print("Terminating Mitigation Protocol and XIVOmega")
-			#add routes to the game's IPs in the host
-			for r in roadsto14:
-				way = f"ip route del {r} via 10.88.0.7"
-				nav = subprocess.run(shlex.split(way),check=True,capture_output=True)
-				try:
-			   		if nav.returncode==0:
-			   			print(f"route to {r} deleted")
-				except subprocess.CalledProcessError as e:
-						print(e.stderr.decode())
-			try:
-				panto = subprocess.run(shlex.split("podman stop xivomega"),check=True,capture_output=True)
-				if panto.returncode == 0:
-					print("XIVOmega Container Stopped")
-			except subprocess.CalledProcessError as e:
-				print(e.stderr.decode())
-			try:
-				atomic = subprocess.run(shlex.split("podman network disconnect xivlanc xivomega"),check=True,capture_output=True)
-				if atomic.returncode == 0:
-					print("XIVOmega IPVlan Disconnected")
-			except subprocess.CalledProcessError as e:
-				print(e.stderr.decode())
-			try:
-				flame = subprocess.run(shlex.split("podman network rm xivlanc"),check=True,capture_output=True)
-				if flame.returncode == 0:
-					print("XIVOmega IPVlan Removed")
-			except subprocess.CalledProcessError as e:
-				print(e.stderr.decode())
-			try:
-				bworld = subprocess.run(shlex.split("podman rm xivomega"),check=True,capture_output=True)
-				if bworld.returncode == 0:
-					print("XIVOmega Container removed")
-			except subprocess.CalledProcessError as e:
-				print(e.stderr.decode())
-			try:
-				lanhdie = subprocess.run(shlex.split("ip link set xivlanh down"),check=True,capture_output=True)
-				if lanhdie.returncode == 0:
-					print("Host IPVlan turned off")
-			except subprocess.CalledProcessError as e:
-				print(e.stderr.decode())
-			try:
-				lanhrm = subprocess.run(shlex.split("ip link del xivlanh"),check=True,capture_output=True)
-				if lanhrm.returncode == 0:
-					print("Host IPVlan removed")
-			except subprocess.CalledProcessError as e:
-				print(e.stderr.decode())
-			print("All done - goodbye")
-
+			omegaBeetle.SelfDestructProtocol()
 	return rc 
 
 if __name__ == "__main__":
