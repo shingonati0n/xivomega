@@ -1,4 +1,6 @@
-XIVOmega - Latency Mitigator for Steam Deck based on XIVMitmLatencyMitigator
+![ksnip_20240901-215038](https://github.com/user-attachments/assets/3acf5a6b-81b7-4616-9d13-f51f5a0576c5)
+
+XIVOmega - Latency Mitigator for Steam Deck based on XivMitmLatencyMitigator
 ----------------------------------------------------------------------------
 
 Playing Final Fantasy XIV on Steam Deck and unable to doubleweave things?? 
