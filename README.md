@@ -63,7 +63,7 @@ FAQ:
 
 -**Q: Why is there a message saying "Failed to read previous opcode definition files: Definitions file older than an hour" every time I run this thing?**
 
--**A**: That's because each time XIVOmega runs, it creates a new container everytime, which gets removed after exiting the program via Ctrl-C. Since the container itself is new, it gos thru the ruleset up in XivMitmLatencyMitigator, which downloads the opcodes file for use with the game if the file is older than one hour. 
+-**A**: That's because each time XIVOmega runs, it creates a new container everytime, which gets removed after exiting the program via Ctrl-C. Since the container itself is new, it goes thru the rule set up in XivMitmLatencyMitigator, which downloads the opcodes file for use with the game if the file is older than one hour. 
 
 -**Q: Why putting the binary in /var/lib/flatpak/exports/bin/ and not in some other more common location like /usr/bin**
 
