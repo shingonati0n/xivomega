@@ -18,6 +18,15 @@ pth = "/home/deck/xivomega/"
 #region aux functions and classes
 
 class WorkerClass:
+	def fixPodmanStorage(self):
+		podstorecmd = "cp /home/deck/xivomega/storage/storage.conf /etc/containers/storage.conf"
+		psf = subprocess.run(shlex.split(podstorecmd),check=True,capture_output=True)
+		try:
+		   	if psf.returncode==0:
+		   		print(f"/etc/containers/storage.conf was patched")
+		except subprocess.CalledProcessError as e:
+			print(e.stderr.decode())
+
 	def SetRoutes(self,rt14):
 		for r in rt14:
 			way = f"ip route add {r} via 10.88.0.7"
@@ -178,8 +187,8 @@ class ConnectionFailedError(Exception):
 
 #main program
 def __main__() -> int:
+	
 	#bring config parms
-
 	config_v = read_config()
 
 	#check this is running in Linux:
@@ -199,6 +208,8 @@ def __main__() -> int:
 		#check if running as sudo
 		if os.getuid() != 0:
 			raise RootRequiredError
+		#patch /etc/containers/storage.conf 
+		omegaBeetle.fixPodmanStorage()
 		#get IP address with cidr from wlan0 - need to add eth0 for cabled connections if any
 		ipv4 = os.popen('ip addr show wlan0').read().split("inet ")[1].split(" brd")[0] 
 		#print(ipv4)
