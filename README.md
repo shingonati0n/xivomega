@@ -65,6 +65,10 @@ FAQ:
 
 -**A**: That's because each time XIVOmega runs, it creates a new container everytime, which gets removed after exiting the program via Ctrl-C. Since the container itself is new, it goes thru the rule set up in XivMitmLatencyMitigator, which downloads the opcodes file for use with the game if the file is older than one hour. 
 
+-**Q: I stopped playing and turned the Deck off quickly because reasons - what happens with this thing??**
+
+-**A**: Although the recommended way of exiting will always be by Ctrl+C to have everything cleaned up, there are no problems. The next time you start the script, it will autoclean any dangling and will recreate the container and all the networking steps without hassle. 
+
 -**Q: Why putting the binary in /var/lib/flatpak/exports/bin/ and not in some other more common location like /usr/bin**
 
 -**A**: This location was selected due to how the SteamOS purges almost everything whenever an OS update is applied to the deck - the exception being the home/ folder and most of var/.
