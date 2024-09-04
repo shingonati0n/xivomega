@@ -23,7 +23,8 @@ class WorkerClass:
 		psf = subprocess.run(shlex.split(podstorecmd),check=True,capture_output=True)
 		try:
 		   	if psf.returncode==0:
-		   		print(f"/etc/containers/storage.conf was patched")
+		   		#print(f"/etc/containers/storage.conf was patched")
+		   		pass
 		except subprocess.CalledProcessError as e:
 			print(e.stderr.decode())
 
@@ -127,7 +128,57 @@ class WorkerClass:
 				print("Host IPVlan removed")
 		except subprocess.CalledProcessError as e:
 			print(e.stderr.decode())
-		print("All done - goodbye")
+		print("All done - Goodbye")
+
+#Self Cleaning - in case last session was ended by user and they didn't closed using Ctrl+C
+	def SelfCleaningProtocol(self):
+		ccnt = 0
+		for r in roadsto14:
+			way = f"ip route del {r} via 10.88.0.7"
+			nav = subprocess.run(shlex.split(way),check=True,capture_output=True)
+			try:
+		   		if nav.returncode==0:
+		   			ccnt = ccnt + 1
+			except subprocess.CalledProcessError as e:
+					pass 
+		try:
+			bworld = subprocess.run(shlex.split("podman stop xivomega"),check=True,capture_output=True)
+			if bworld.returncode == 0:
+				ccnt = ccnt + 1
+				pass
+		except subprocess.CalledProcessError as e:
+			pass
+		try:
+			bworld = subprocess.run(shlex.split("podman rm xivomega"),check=True,capture_output=True)
+			if bworld.returncode == 0:
+				ccnt = ccnt + 1
+				pass
+		except subprocess.CalledProcessError as e:
+			pass
+		try:
+			flame = subprocess.run(shlex.split("podman network rm xivlanc"),check=True,capture_output=True)
+			if flame.returncode == 0:
+				ccnt = ccnt + 1
+				pass
+		except subprocess.CalledProcessError as e:
+			pass
+		try:
+			lanhdie = subprocess.run(shlex.split("ip link set xivlanh down"),check=True,capture_output=True)
+			if lanhdie.returncode == 0:
+				ccnt = ccnt + 1
+				pass
+		except subprocess.CalledProcessError as e:
+			pass 
+		try:
+			lanhrm = subprocess.run(shlex.split("ip link del xivlanh"),check=True,capture_output=True)
+			if lanhrm.returncode == 0:
+				ccnt = ccnt + 1
+				pass
+		except subprocess.CalledProcessError as e:
+			pass
+		if (ccnt > 0):
+			print("Dangling elements from previous play session detected. CleanUp Protocol Activated")
+
 
 #read config file
 
@@ -209,6 +260,7 @@ def __main__() -> int:
 		if os.getuid() != 0:
 			raise RootRequiredError
 		#patch /etc/containers/storage.conf 
+		omegaBettle.SelfCleaningProtocol()
 		omegaBeetle.fixPodmanStorage()
 		#get IP address with cidr from wlan0 - need to add eth0 for cabled connections if any
 		ipv4 = os.popen('ip addr show wlan0').read().split("inet ")[1].split(" brd")[0] 
@@ -377,7 +429,7 @@ def __main__() -> int:
 	finally:
 		#Close routine - do same thing as xivostop
 		if rc >= 0:
-			#remov  e routes
+			#remove everything
 			omegaBeetle.SelfDestructProtocol()
 	return rc 
 

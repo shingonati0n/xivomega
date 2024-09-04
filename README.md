@@ -17,7 +17,7 @@ Don't have another PC where you can run [XivMitmLatencyMitigator](https://github
 
 This solution is for you!! - Run XivMitmLatencyMitigator on your Steam Deck with a container acting as bare metal man-in-the-middle. 
 
-This Python Script relies on Podman to create and run the container - Podman is bundled by default in Steam Deck as part of Distrobox. 
+This Python Script relies on Podman to create and run the container - Podman is bundled by default in Steam Deck as part of Distrobox since SteamOS 3.5. 
 
 This script also handles all networking steps to enable the mitigator without having to enter additional commands and allow customization of some variables. 
 
@@ -79,9 +79,7 @@ FAQ:
 
 -**Q: What happens if I play XIV on Linux, but not SteamOS?? Will this app work??**
 
--**A**: This should work on a Linux setup - just have in mind this app is made specifically for Deck and hence is made to circumvent some limitations you will not encounter on a normal Linux Distro (not being able to sudo install things, restricted to wlan0 adapter only, etc). If you are capable and want to extend this to make it work with any other distro, you are welcome to do so.
-
-
+-**A**: This should work on a Linux setup, provided you have Podman installed properly - just have in mind this app is made specifically for the Steam Deck and hence is made to circumvent some limitations you will not encounter on a normal Linux Distro (not being able to sudo install things, restricted to wlan0 adapter only, wipes of system data between SteamOS updates, etc). If you are capable and want to extend this to make it work with any other distro, you are welcome to do so.
 
 Special Thanks:
 --------------
