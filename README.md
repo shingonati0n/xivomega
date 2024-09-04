@@ -67,7 +67,7 @@ FAQ:
 
 -**Q: I stopped playing and turned the Deck off quickly because reasons - what happens with this thing??**
 
--**A**: Although the recommended way of exiting will always be by Ctrl+C to have everything cleaned up, there are no problems. The next time you start the script, it will autoclean any dangling and will recreate the container and all the networking steps without hassle. 
+-**A**: Although the recommended way of exiting will always be by Ctrl+C to have everything cleaned up, there are no problems. The next time you start the script, it will autoclean any dangling elements and will recreate the container and all the networking steps without hassle. 
 
 -**Q: Why putting the binary in /var/lib/flatpak/exports/bin/ and not in some other more common location like /usr/bin**
 
