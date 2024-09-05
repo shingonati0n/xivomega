@@ -135,49 +135,50 @@ class WorkerClass:
 		ccnt = 0
 		for r in roadsto14:
 			way = f"ip route del {r} via 10.88.0.7"
-			nav = subprocess.run(shlex.split(way),check=True,capture_output=True)
 			try:
-		   		if nav.returncode==0:
+				nav = subprocess.run(shlex.split(way),check=True,capture_output=True)
+				if nav.returncode==0:
 		   			ccnt = ccnt + 1
+		   			#print(f"route to {r} deleted")
 			except subprocess.CalledProcessError as e:
-					pass 
+				#print(e.stderr.decode())
+				pass
 		try:
 			bworld = subprocess.run(shlex.split("podman stop xivomega"),check=True,capture_output=True)
 			if bworld.returncode == 0:
 				ccnt = ccnt + 1
-				pass
 		except subprocess.CalledProcessError as e:
 			pass
+			#print(e.stderr.decode())
 		try:
 			bworld = subprocess.run(shlex.split("podman rm xivomega"),check=True,capture_output=True)
 			if bworld.returncode == 0:
 				ccnt = ccnt + 1
-				pass
 		except subprocess.CalledProcessError as e:
 			pass
+			#print(e.stderr.decode())
 		try:
 			flame = subprocess.run(shlex.split("podman network rm xivlanc"),check=True,capture_output=True)
 			if flame.returncode == 0:
 				ccnt = ccnt + 1
-				pass
 		except subprocess.CalledProcessError as e:
 			pass
+			#print(e.stderr.decode())
 		try:
 			lanhdie = subprocess.run(shlex.split("ip link set xivlanh down"),check=True,capture_output=True)
 			if lanhdie.returncode == 0:
 				ccnt = ccnt + 1
-				pass
 		except subprocess.CalledProcessError as e:
-			pass 
+			pass
+			#print(e.stderr.decode())
 		try:
 			lanhrm = subprocess.run(shlex.split("ip link del xivlanh"),check=True,capture_output=True)
 			if lanhrm.returncode == 0:
-				ccnt = ccnt + 1
-				pass
+				ccnt = ccnt +1
 		except subprocess.CalledProcessError as e:
 			pass
 		if (ccnt > 0):
-			print("Dangling elements from previous play session detected. CleanUp Protocol Activated")
+			print("Dangling elements from previous play session detected. CleanUp Protocol Activated and Completed")
 
 
 #read config file
@@ -236,6 +237,9 @@ class InvalidIPException(Exception):
 class ConnectionFailedError(Exception):
 	pass
 
+class NonExistentException(Exception):
+	pass
+
 #main program
 def __main__() -> int:
 	
@@ -260,7 +264,7 @@ def __main__() -> int:
 		if os.getuid() != 0:
 			raise RootRequiredError
 		#patch /etc/containers/storage.conf 
-		omegaBettle.SelfCleaningProtocol()
+		omegaBeetle.SelfCleaningProtocol()
 		omegaBeetle.fixPodmanStorage()
 		#get IP address with cidr from wlan0 - need to add eth0 for cabled connections if any
 		ipv4 = os.popen('ip addr show wlan0').read().split("inet ")[1].split(" brd")[0] 
@@ -309,7 +313,7 @@ def __main__() -> int:
 		try:
 			xivnet = subprocess.run(shlex.split(podnet),check=True,capture_output=True)  # shell=False
 			if xivnet.returncode == 0:
-				print("podman ipvlan network xivnet has been created")
+				print("podman ipvlan network xivlanc has been created")
 		except subprocess.CalledProcessError as e: 
 			print(e.stderr.decode())
 			rc = -1
