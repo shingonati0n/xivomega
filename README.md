@@ -1,3 +1,5 @@
+If using Steam Deck, please try using [this Decky Plugin instead](https://github.com/shingonati0n/xivomega-decky). If you don't want to use Decky or are using Linux, you can go ahead and use this solution. 
+
 ![ksnip_20240901-215038](https://github.com/user-attachments/assets/3acf5a6b-81b7-4616-9d13-f51f5a0576c5)
 
 XIVOmega - Latency Mitigator for Steam Deck based on XivMitmLatencyMitigator
