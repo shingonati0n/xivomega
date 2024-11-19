@@ -18,6 +18,10 @@ try:
 	if os.path.isfile('/var/lib/flatpak/exports/bin/xivomega'):
 		raise BinaryExistsException
 
+	print("*************************************")
+	print("RUN THIS ONLY IF USING FROM STEAM DECK!")
+	print("If using from Linux, just run 'sudo ./run.py'")
+	print("*************************************")
 	print("Welcome to the installer for XIVOmega")
 	print("This will install the binary for xivomega on /var/lib/flatpak/exports/bin")
 	print("This is done to avoid SteamOS wiping the binary when upadting the firmware")
@@ -26,7 +30,7 @@ try:
 	if ins.lower() == "n":
 		raise NotAcceptedException 
 	else:
-		app_path = os.path.dirname(__file__) + "/run.py"
+		app_path = os.getcwd() + "/run.py"
 		os.chmod(app_path, 0o777)
 		subprocess.run(shlex.split("cp " + app_path + " /var/lib/flatpak/exports/bin/xivomega"))
 		print("Binary successfully installed to /var/lib/flatpak/exports/bin/xivomega")

@@ -2,12 +2,12 @@ If using Steam Deck, please try using [this Decky Plugin instead](https://github
 
 ![ksnip_20240901-215038](https://github.com/user-attachments/assets/3acf5a6b-81b7-4616-9d13-f51f5a0576c5)
 
-XIVOmega - Latency Mitigator for Steam Deck based on XivMitmLatencyMitigator
+XIVOmega - Latency Mitigator for Linux based on XivMitmLatencyMitigator
 ----------------------------------------------------------------------------
 
-Playing Final Fantasy XIV on Steam Deck and unable to doubleweave things?? 
+Playing Final Fantasy XIV on Linux and unable to doubleweave things?? 
 
-Troubled because [XivAlexander](https://github.com/Soreepeong/XivAlexander) doesn't run natively on SteamOS and don't want to install Windows??
+Troubled because [XivAlexander](https://github.com/Soreepeong/XivAlexander) doesn't run natively on your distro and don't want to install Windows or deal with Wine stuff??
 
 Don't have another PC where you can run [XivMitmLatencyMitigator](https://github.com/Soreepeong/XivMitmLatencyMitigator)?? 
 
@@ -17,15 +17,27 @@ Don't have another PC where you can run [XivMitmLatencyMitigator](https://github
 
 ![20240831184705_1](https://github.com/user-attachments/assets/cfdad1ff-7e45-4f40-85c5-9c995176e643)
 
-This solution is for you!! - Run XivMitmLatencyMitigator on your Steam Deck with a container acting as bare metal man-in-the-middle. 
+This solution is for you!! - Run XivMitmLatencyMitigator on your distro with a container acting as bare metal man-in-the-middle. 
 
-This Python Script relies on Podman to create and run the container - Podman is bundled by default in Steam Deck as part of Distrobox since SteamOS 3.5. 
+This Python Script relies on Podman to create and run the container - This was originally built for Steam Deck, which comes with podman, but repurposing for linux instead. 
 
 This script also handles all networking steps to enable the mitigator without having to enter additional commands and allow customization of some variables. 
 
 - Recommendations for usage: 
 
-For Game Mode, it's highly recommended to have **Decky Loader** installed with the **Decky Terminal plugin** ([link here](https://github.com/SteamDeckHomebrew/decky-loader)). If you are not using Decky Loader, then add Konsole as a Steam App, so you can open it from game mode. How to set up Konsole in game mode is outside the scope of this document, so look it up. 
+- For Linux: 
+
+- Download from releases and uncompress in any location on your PC. 
+- Open a terminal on the location where you decompressed the file, enter the xivomega folder and run **sudo python run.py** - you can add chmod -x run.py to run using **sudo ./run.py**
+- You can now open the game and leave this running in the background. 
+- When finished, press Ctrl+C to close it and remove all network elements and the container. 
+
+
+- For Steam Deck: Again, use [this Decky Plugin instead](https://github.com/shingonati0n/xivomega-decky). 
+
+The instructions below are legacy or just in case you don't want to have Decky Loader installed. 
+
+Add Konsole as a Steam App, so you can open it from game mode. How to set up Konsole in game mode is outside the scope of this document, so look it up. 
 
 - How to use:
 
@@ -36,10 +48,7 @@ For Game Mode, it's highly recommended to have **Decky Loader** installed with t
 	- **If using Desktop Mode**: 
 			- Open Konsole and execute **sudo xivomega** and wait until the mitigator starts running -
 			- Open FFXIV and game
-	- **If using from Game Mode with Decky Terminal**:
-		    - Open the QAM (three-dotted button under the right trackpad) and open a Decky Terminal - then execute **sudo xivomega** - wait until the mitigator starts running 
-		    - Press the Steam Button and open your launcher and game
-	- **If using from Game Mode without Decky Terminal**: 
+	- **If using from Game Mode without Decky**: 
 			- Open Konsole from your library 
 			- from inside Konsole, run **sudo xivomega** 
 			- wait until the mitigator starts running
@@ -54,8 +63,8 @@ Options and Customization:
 
 This program creates 2 virtual network adapters to allow the container to communicate with the internet - By default, this happens on the program:
 
- - 2 IPVlan adapters are created using wlan0 (Wifi Adapter) as parent
- - Each got assigned the last 2 IP addresses from the network the Deck is connected in
+ - 2 IPVlan adapters are created using whatever device is connected. Ethernet has the priority.
+ - Each got assigned 2 random available IPs from the subnetwork your machine is running.
 
  If you need to customize the IP addresses - you can do so from the config.ini file inside the /xivomega folder - just change the values from default - to the desired IP addresses - make sure both are part of the same subnet you are connected in. 
 
@@ -77,15 +86,18 @@ FAQ:
 
 -**Q: I need to type my password everytime I run sudo xivomega - is there anyway to avoid this??**
 
--**A**: There are ways! but after some thought I decided not including this for the time being. Implementing this requires the user to save the password somewhere in a plain text file, something which some persons might not be keen to do. If the feature is requested, we can see how to try and implement it.
+-**A**: Although I'll sound repeating, if using Steam Deck, just go for the plugin. The usage on the plugin version is as simple as clicking a toggle. 
 
 -**Q: Will this always need/require a terminal to run??**
 
--**A**: For the foreseeable future, yes. Until I turn this into a Standalone Decky Plugin
+-**A**: Just if you don't want to use Decky and the Plugin.
 
 -**Q: What happens if I play XIV on Linux, but not SteamOS?? Will this app work??**
 
--**A**: This should work on a Linux setup, provided you have Podman installed properly - just have in mind this app is made specifically for the Steam Deck and hence is made to circumvent some limitations you will not encounter on a normal Linux Distro (not being able to sudo install things, restricted to wlan0 adapter only, wipes of system data between SteamOS updates, etc). If you are capable and want to extend this to make it work with any other distro, you are welcome to do so.
+-**A**: The latest update was made for the people playing on Linux. A lot of hardcoded stuff was removed and a couple of improvements were introduced. If running in Linux, just make sure your machine has:
+	- Podman 4.4+
+	- Netavark 1.13.0 
+Older version don't support ipvlan driver.
 
 Special Thanks:
 --------------

@@ -10,4 +10,4 @@ echo -e "${RED} ░▒▓█▓▒░▓█▓▒░░▒▓█▓▒░ ░▒
 echo -e "${RED}░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░ ░▒▓█▓▓█▓▒░ ░${NC}▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ";
 echo -e "${RED}░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░  ░▒▓██▓▒░  ░${NC}░▒▓██████▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓██████▓▒░░▒▓█▓▒░░▒▓█▓▒░ ";
 echo -e "                                                                                                         ";
-echo -e "                      Latency Mitigator for ${CYAN}Steam${NC} Deck based on ${RED}XIV${NC}Alexander                             ";
+echo -e "                      Latency Mitigator for ${CYAN}Linux${NC} based on ${RED}XIV${NC}Alexander                             ";
