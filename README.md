@@ -41,9 +41,9 @@ This script also handles all networking steps to enable the mitigator without ha
 The instructions below are legacy or just in case you don't want to have Decky Loader installed. **Moving onwards this solution will be geared towards Linux**
 
 
-	- Add Konsole as a Steam App, so you can open it from game mode. How to set up Konsole in game mode is outside the scope of this document, so look it up. 
-	- Go to Desktop Mode in Steam Deck and download from latest releases ([link here ](https://github.com/shingonati0n/xivomega/releases)) - extract the contents to **/home/deck**. you should end up with a folder called **xivomega** on **/home/deck**
-	- Open Konsole and and run the installer (**sudo python /home/deck/xivomega/installer.py**) - this will install the binary in **/var/lib/flatpak/exports/bin/xivomega** so it's easier to call it later on. 
+- Add Konsole as a Steam App, so you can open it from game mode. How to set up Konsole in game mode is outside the scope of this document, so look it up. 
+- Go to Desktop Mode in Steam Deck and download from latest releases ([link here ](https://github.com/shingonati0n/xivomega/releases)) - extract the contents to **/home/deck**. you should end up with a folder called **xivomega** on **/home/deck**
+- Open Konsole and and run the installer (**sudo python /home/deck/xivomega/installer.py**) - this will install the binary in **/var/lib/flatpak/exports/bin/xivomega** so it's easier to call it later on. 
 
 - This can run in both Desktop and Game Modes:
 	- **If using Desktop Mode**: 
