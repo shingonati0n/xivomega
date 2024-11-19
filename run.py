@@ -11,15 +11,44 @@ import shlex
 import time
 import io
 import configparser
+import gi
+gi.require_version("NM", "1.0")
+from gi.repository import GLib, NM
+from pathlib import Path
+import random 
+from random import randint, sample
 
-#pth = os.path.dirname(__file__) + "/"
-pth = "/home/deck/xivomega/"
+#append py_modules to PYTHONPATH
+sys.path.append(str(Path(__file__).parent / "py_modules"))
+
+from scapy.all import ARP, Ether, srp
+
+#pth = "/home/deck/xivomega/"
+pth = os.getcwd()
 
 #region aux functions and classes
-
 class WorkerClass:
+	def get_current_device(self):
+		client = NM.Client.new(None)
+		devices = client.get_devices()
+		netdevices = {}
+		curr_netd = ""
+
+		for device in devices:
+		    netdevices[device.get_iface()] = device.get_type_description() + ";" + device.get_state().value_nick
+
+	#priority is ethernet first, then wifi
+		for netd, netdet in netdevices.items():
+			netd_type, netd_state = netdet.split(";")
+			if netd_type in ("ethernet") and netd_state in ("activated"):
+				return netd #ethernet = enp0s*
+			elif netd_type in ("wifi") and netd_state in ("activated"):
+				return netd #wifi = wlan* or wlp*
+
+		return curr_netd #you get nothing, you lose, good day, sir!
+
 	def fixPodmanStorage(self):
-		podstorecmd = "cp /home/deck/xivomega/storage/storage.conf /etc/containers/storage.conf"
+		podstorecmd = f"cp {pth}/storage/storage.conf /etc/containers/storage.conf"
 		psf = subprocess.run(shlex.split(podstorecmd),check=True,capture_output=True)
 		try:
 		   	if psf.returncode==0:
@@ -44,7 +73,7 @@ class WorkerClass:
 		subprocess.run(shlex.split("iptables -F OUTPUT"),check=True,capture_output=True)
 
 	def PrintLogo(self):
-		subprocess.call(pth + "titleCard.sh")
+		subprocess.call(pth + "/titleCard.sh")
 
 	def ReconnectProtocol(self):
 		subprocess.run(shlex.split("podman restart xivomega"),check=True,capture_output=True)
@@ -57,7 +86,8 @@ class WorkerClass:
 			time.sleep(1)
 
 	def CreateHostAdapter(self,virtual_ip,netbits,broadcast):
-		ipvl1 = f"ip link add xivlanh link wlan0 type ipvlan mode l2"
+		ntdev = self.get_current_device()
+		ipvl1 = f"ip link add xivlanh link {ntdev} type ipvlan mode l2"
 		ipvl2 = f"ip addr add {virtual_ip}/{netbits} brd {broadcast} dev xivlanh"
 		ipvl3 = f"ip link set xivlanh up"
 		
@@ -193,7 +223,7 @@ def cidr_to_netmask(cidr):
 #get config files parms
 def read_config():
 	cfg = configparser.ConfigParser()
-	cfg.read(pth + 'config.ini')
+	cfg.read(pth + '/config.ini')
 
 	ipvlan_host = cfg.get('General','ipvlan_host').lower()
 	ipvlan_cont = cfg.get('General','ipvlan_cont').lower()
@@ -220,6 +250,51 @@ def is_valid_ipv4_address(address):
         return False
 
     return True
+
+#scapy methods to get network info - get all IPs in use
+def scan(ip):
+	arp_request = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=ip)
+	result = srp(arp_request, timeout=1, verbose=False)[0]
+	devices = [{'ip': received.psrc, 'mac': received.hwsrc} for sent, received in result]
+	return devices
+
+def get_device_names(devices):
+	device_names = []
+	for device in devices:
+		try:
+			host_name, _, _ = socket.gethostbyaddr(device['ip'])
+			device_names.append({'ip': device['ip'], 'mac': device['mac'], 'name': host_name})
+		except socket.herror:
+		   
+			device_names.append({'ip': device['ip'], 'mac': device['mac'], 'name': 'Unknown'})
+	return device_names
+
+def get_vip_lip(ipaddr,subnaddr):
+	ips = []
+	target_ip = ipaddr
+	devices_list = scan(target_ip)
+	for device in devices_list:
+		for k,v in device.items():
+			if k in 'ip':
+				ips.append(device[k])
+	devices_with_names = get_device_names(devices_list)
+	
+	print("IPs in use:")
+	for uip in ips:
+		print(uip)
+	allip = [str(ip) for ip in ipaddress.IPv4Network(subnaddr)]
+	useable_ip = allip[3:-2]
+	# Removing elements present in other list
+	# using list comprehension
+	res = [i for i in useable_ip if i not in ips]
+	print("Chosen IPs:")
+	vip, lip = sample(res,2)
+	print(f"VlanIP: {vip}")
+	print(f"Last IP: {lip}")
+	return vip, lip
+
+#end of scapy methods
+
 
 #end aux region
 
@@ -267,7 +342,8 @@ def __main__() -> int:
 		omegaBeetle.SelfCleaningProtocol()
 		omegaBeetle.fixPodmanStorage()
 		#get IP address with cidr from wlan0 - need to add eth0 for cabled connections if any
-		ipv4 = os.popen('ip addr show wlan0').read().split("inet ")[1].split(" brd")[0] 
+		netdev = omegaBeetle.get_current_device()
+		ipv4 = os.popen('ip addr show ' + netdev).read().split("inet ")[1].split(" brd")[0] 
 		#print(ipv4)
 		ipv4n, netb = ipv4.split('/')
 		
@@ -283,6 +359,8 @@ def __main__() -> int:
 		nt = ipaddress.IPv4Network(sdsubn)
 		fip = str(nt[1])
 
+		dvip, dlip = get_vip_lip(ipv4n,subn)
+
 		if config_v['ipvlan_host'] != 'default' and config_v['ipvlan_cont'] != 'default' :
 			if is_valid_ipv4_address(config_v['ipvlan_host']) == True and is_valid_ipv4_address(config_v['ipvlan_host']) == True:
 				vip = config_v['ipvlan_host']
@@ -292,24 +370,24 @@ def __main__() -> int:
 		elif config_v['ipvlan_host'] != 'default' and config_v['ipvlan_cont'] == 'default': 
 			if is_valid_ipv4_address(config_v['ipvlan_host']) == True:
 				vip = config_v['ipvlan_host']
-				lip = str(nt[-3])
+				lip = dlip
 			else:
 				raise InvalidIPException
 		elif config_v['ipvlan_host'] == 'default' and config_v['ipvlan_cont'] != 'default': 
 			if is_valid_ipv4_address(config_v['ipvlan_cont']) == True:
-				vip = str(nt[-4])
+				vip = dvip
 				lip = config_v['ipvlan_cont']
 			else:
 				raise InvalidIPException
 		else: 
-			vip, lip = str(nt[-4]), str(nt[-3])
+			vip, lip = dvip, dlip
 
 		brd = str(nt.broadcast_address)
 
 		#create podman network
 		#This is using ipvlan 		
 		print("Welcome to XIVOmega v.0.01a")
-		podnet = f"podman network create --subnet={sdsubn} --gateway={sdgway} --driver=ipvlan -o parent=wlan0 xivlanc"
+		podnet = f"podman network create --subnet={sdsubn} --gateway={sdgway} --driver=ipvlan -o parent={netdev} xivlanc"
 		try:
 			xivnet = subprocess.run(shlex.split(podnet),check=True,capture_output=True)  # shell=False
 			if xivnet.returncode == 0:
