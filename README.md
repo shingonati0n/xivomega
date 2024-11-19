@@ -23,9 +23,10 @@ This Python Script relies on Podman to create and run the container - This was o
 
 This script also handles all networking steps to enable the mitigator without having to enter additional commands and allow customization of some variables. 
 
-- Recommendations for usage: 
+- How to use: 
 
-- For Linux: 
+**For Linux**: 
+--------------
 
 - Download from releases and uncompress in any location on your PC. 
 - Open a terminal on the location where you decompressed the file, enter the xivomega folder and run **sudo python run.py** - you can add chmod -x run.py to run using **sudo ./run.py**
@@ -33,14 +34,14 @@ This script also handles all networking steps to enable the mitigator without ha
 - When finished, press Ctrl+C to close it and remove all network elements and the container. 
 
 
-- For Steam Deck: Again, use [this Decky Plugin instead](https://github.com/shingonati0n/xivomega-decky). 
+**For Steam Deck: Again, use [this Decky Plugin instead](https://github.com/shingonati0n/xivomega-decky).**
+-----------------------------------------------------------------------------------------------------------
 
-The instructions below are legacy or just in case you don't want to have Decky Loader installed. 
 
-Add Konsole as a Steam App, so you can open it from game mode. How to set up Konsole in game mode is outside the scope of this document, so look it up. 
+The instructions below are legacy or just in case you don't want to have Decky Loader installed. **Moving onwards this solution will be geared towards Linux**
 
-- How to use:
 
+	- Add Konsole as a Steam App, so you can open it from game mode. How to set up Konsole in game mode is outside the scope of this document, so look it up. 
 	- Go to Desktop Mode in Steam Deck and download from latest releases ([link here ](https://github.com/shingonati0n/xivomega/releases)) - extract the contents to **/home/deck**. you should end up with a folder called **xivomega** on **/home/deck**
 	- Open Konsole and and run the installer (**sudo python /home/deck/xivomega/installer.py**) - this will install the binary in **/var/lib/flatpak/exports/bin/xivomega** so it's easier to call it later on. 
 
