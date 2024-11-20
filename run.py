@@ -33,19 +33,80 @@ class WorkerClass:
 		devices = client.get_devices()
 		netdevices = {}
 		curr_netd = ""
+		saved_eth = {}
+		saved_wifi = {}
 
 		for device in devices:
 		    netdevices[device.get_iface()] = device.get_type_description() + ";" + device.get_state().value_nick
 
-	#priority is ethernet first, then wifi
+		i = 1
+		j = 1
+	#priority is ethernet first, then wifi - if more than one of each, then make user pick
 		for netd, netdet in netdevices.items():
 			netd_type, netd_state = netdet.split(";")
 			if netd_type in ("ethernet") and netd_state in ("activated"):
-				return netd #ethernet = enp0s*
+				saved_eth[i] = netd #ethernet = enp0s*
+				i += 1
 			elif netd_type in ("wifi") and netd_state in ("activated"):
-				return netd #wifi = wlan* or wlp*
+				saved_wifi[j] = netd #wifi = wlan* or wlp*
+				j += 1
 
+		if len(saved_eth) > 1:
+			while True:
+				print("More than one Ethernet adapter has been detected - Please choose one now to proceed: ")
+				print("To avoid picking everytime, you can save the name of your preferred adapter into config.ini in this folder")
+				print("Detected Ethernet Adapters: ")
+				for k,v in saved_eth.items():
+					print(f"{k} - {v}")
+				pref_adapter = input("Enter the number of the adapter you would like to use: ")
+				try:
+					curr_netd = saved_eth.get(pref_adapter)
+				except Exception as e:
+					print("The option selected is not valid. Please select a valid option")
+					continue
+				else:
+					break
+		elif len(saved_eth) == 1:
+			curr_netd = saved_eth.get(1)
+		
+		if len(saved_eth) == 0 and len(saved_wifi) > 1:
+			while True:
+				print("More than one Wifi adapter has been detected - Please choose one now to proceed: ")
+				print("To avoid picking everytime, you can save the name of your preferred adapter into config.ini in this folder")
+				print("Detected Wifi Adapters: ")
+				for k,v in saved_wifi.items():
+					print(f"{k} - {v}")
+				pref_adapter = input("Enter the number of the adapter you would like to use: ")
+				try:
+					curr_netd = saved_wifi.get(pref_adapter)
+				except Exception as e:
+					print("The option selected is not valid. Please select a valid option")
+					continue
+				else:
+					break
+		elif len(saved_wifi) == 1 and len(saved_eth) == 0:
+			curr_netd = saved_wifi.get(1)
+				
 		return curr_netd #you get nothing, you lose, good day, sir!
+	
+	def validateCustomNetDev(self,dev_name):
+		client = NM.Client.new(None)
+		devices = client.get_devices()
+		netdevices = {}
+		valid_dev = ''
+
+		for device in devices:
+		    netdevices[device.get_iface()] = device.get_type_description() + ";" + device.get_state().value_nick
+
+		if dev_name not in netdevices.keys():
+			print("Invalid Network Adapter specified in config file")
+			print("XIVOmega will now retrieve the actual list of devices, so please pick one")
+			valid_dev = self.get_current_device()
+		else:
+			valid_dev = dev_name 
+
+		return valid_dev
+
 
 	def fixPodmanStorage(self):
 		podstorecmd = f"cp {pth}/storage/storage.conf /etc/containers/storage.conf"
@@ -227,11 +288,13 @@ def read_config():
 
 	ipvlan_host = cfg.get('General','ipvlan_host').lower()
 	ipvlan_cont = cfg.get('General','ipvlan_cont').lower()
+	pref_netdev = cfg.get('General','network_adapter')
 
 	#create dictionary with Config Parms
 	cfg_val = {
 	'ipvlan_host': ipvlan_host,
-	'ipvlan_cont': ipvlan_cont
+	'ipvlan_cont': ipvlan_cont,
+	'network_adapter': pref_netdev
 	}
 
 	return cfg_val
@@ -342,7 +405,15 @@ def __main__() -> int:
 		omegaBeetle.SelfCleaningProtocol()
 		omegaBeetle.fixPodmanStorage()
 		#get IP address with cidr from wlan0 - need to add eth0 for cabled connections if any
-		netdev = omegaBeetle.get_current_device()
+
+		#override if config file is populated!
+		netdev = ''
+
+		if config_v['network_adapter'] == 'default':
+			netdev = omegaBeetle.get_current_device()
+		else:
+			netdev = omegaBeetle.validateCustomNetDev(config_v['network_adapter'])
+
 		ipv4 = os.popen('ip addr show ' + netdev).read().split("inet ")[1].split(" brd")[0] 
 		#print(ipv4)
 		ipv4n, netb = ipv4.split('/')
@@ -387,6 +458,7 @@ def __main__() -> int:
 		#create podman network
 		#This is using ipvlan 		
 		print("Welcome to XIVOmega v.0.01a")
+		print(f"Network Adapter in use: {netdev}")
 		podnet = f"podman network create --subnet={sdsubn} --gateway={sdgway} --driver=ipvlan -o parent={netdev} xivlanc"
 		try:
 			xivnet = subprocess.run(shlex.split(podnet),check=True,capture_output=True)  # shell=False
