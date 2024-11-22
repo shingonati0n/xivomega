@@ -35,6 +35,7 @@ class WorkerClass:
 		curr_netd = ""
 		saved_eth = {}
 		saved_wifi = {}
+		#test_flag = 'Y'
 
 		for device in devices:
 		    netdevices[device.get_iface()] = device.get_type_description() + ";" + device.get_state().value_nick
@@ -50,6 +51,11 @@ class WorkerClass:
 			elif netd_type in ("wifi") and netd_state in ("activated"):
 				saved_wifi[j] = netd #wifi = wlan* or wlp*
 				j += 1
+		
+		# if test_flag == 'Y':
+		# 	saved_wifi.clear()
+		# 	saved_wifi[1] = "wlp3s0"
+		# 	saved_wifi[2] = "test"
 
 		if len(saved_eth) > 1:
 			while True:
@@ -60,7 +66,7 @@ class WorkerClass:
 					print(f"{k} - {v}")
 				pref_adapter = input("Enter the number of the adapter you would like to use: ")
 				try:
-					curr_netd = saved_eth.get(pref_adapter)
+					curr_netd = saved_eth.get(int(pref_adapter))
 				except Exception as e:
 					print("The option selected is not valid. Please select a valid option")
 					continue
@@ -78,7 +84,7 @@ class WorkerClass:
 					print(f"{k} - {v}")
 				pref_adapter = input("Enter the number of the adapter you would like to use: ")
 				try:
-					curr_netd = saved_wifi.get(pref_adapter)
+					curr_netd = saved_wifi.get(int(pref_adapter))
 				except Exception as e:
 					print("The option selected is not valid. Please select a valid option")
 					continue
