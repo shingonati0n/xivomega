@@ -152,8 +152,8 @@ class WorkerClass:
 			print(i, end = ' \r')
 			time.sleep(1)
 
-	def CreateHostAdapter(self,virtual_ip,netbits,broadcast):
-		ntdev = self.get_current_device()
+	def CreateHostAdapter(self,virtual_ip,netbits,broadcast,ntdev):
+		#ntdev = self.get_current_device()
 		ipvl1 = f"ip link add xivlanh link {ntdev} type ipvlan mode l2"
 		ipvl2 = f"ip addr add {virtual_ip}/{netbits} brd {broadcast} dev xivlanh"
 		ipvl3 = f"ip link set xivlanh up"
@@ -475,7 +475,7 @@ def __main__() -> int:
 			rc = -1
 		
 		# create host ipvlan adapter
-		omegaBeetle.CreateHostAdapter(vip,netb,brd)
+		omegaBeetle.CreateHostAdapter(vip,netb,brd,netdev)
 				
 		print("Creating podman container")
 		
