@@ -26,6 +26,9 @@ from scapy.all import ARP, Ether, srp
 #pth = "/home/deck/xivomega/"
 pth = os.getcwd()
 
+#container version - use latest for production
+quayver = '0.3.0'
+
 #region aux functions and classes
 class WorkerClass:
 	def get_current_device(self):
@@ -305,6 +308,25 @@ def read_config():
 
 	return cfg_val
 
+#check opcode_conf file - if set to true, then copy to container before running
+def opcode_config():
+	opc_cfg = configparser.ConfigParser()
+	opc_cfg.read(pth + '/opcode_conf.ini')
+
+	use_opcodes = opc_cfg.getboolean('Opcodes','use_custom_opcodes')
+
+	if use_opcodes:
+		#run iptables on podman
+		print("Custom Opcode Configuration Detected")
+		print("Using Opcodes from opcode_conf.ini")
+		try:
+			xivo_opcode = subprocess.run(shlex.split(f"podman cp {pth}/opcode_conf.ini xivomega:/home/config.ini"),check=True,capture_output=True)
+			if xivo_opcode.returncode == 0:
+				print("Opcode Configuration Load: Complete")
+		except subprocess.CalledProcessError as e:
+			print(e.stderr.decode())
+
+
 #validate IP Address
 def is_valid_ipv4_address(address):
     try:
@@ -369,7 +391,8 @@ def get_vip_lip(ipaddr,subnaddr):
 
 #Static knicknacks
 
-roadsto14 = ["124.150.157.0/24","153.254.80.0/24","202.67.52.0/24","204.2.29.0/24","80.239.145.0/24"]
+roadsto14 = ["124.150.157.0/24","153.254.80.0/24","202.67.52.0/24","204.2.29.0/24","80.239.145.0/24",
+			"162.14.0.0/16","27.221.0.0/16","119.97.0.0/16","183.111.189.0/24"]
 
 #Custom Classes and Exceptions
 class RootRequiredError(RuntimeError):
@@ -491,7 +514,7 @@ def __main__() -> int:
 		  --sysctl net.ipv4.conf.all.route_localnet=1 \
 		  --net=podman \
 		  --cap-add=NET_RAW,NET_ADMIN \
-		  -ti quay.io/shingonati0n/xivomega:latest /bin/sh"""
+		  -ti quay.io/shingonati0n/xivomega:{quayver} /bin/sh"""
 		
 		try:
 			xivomega = subprocess.run(shlex.split(omegapod),check=True,capture_output=True)
@@ -523,6 +546,9 @@ def __main__() -> int:
 		
 		#add routes to the game's IPs in the host
 		omegaBeetle.SetRoutes(roadsto14)
+
+		#check opcode config and replace if necessary
+		opcode_config()
 
 		#run mitigator on container - 
 		#remove iptables rles from podman
