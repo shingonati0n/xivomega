@@ -100,6 +100,10 @@ FAQ:
 	- Netavark 1.13.0 
 Older version don't support ipvlan driver.
 
+-**Q: It's Patch day and the opcodes from XivAlex aren't updated yet - Anything I can do to avoid the wait for opcodes to be updated??**
+
+-**A**: Yes you can! In v.1.2.0 - there's the option to configure custom opcodes via the opcode_conf.ini file. Set use_custom_opcodes to true and change the values of the opcodes below. They're mostly published on the XivAlex repo by the community shortly after a patch releases. They get officially updated eventually, but there might be time gaps in between. Also consider using the method described here to find the opcodes: https://github.com/Soreepeong/XivAlexander/wiki/How-to-find-opcodes 
+
 Special Thanks:
 --------------
 
