@@ -1,0 +1,18 @@
+FROM debian:bookworm-slim
+
+# Instalación de dependencias mínimas
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        wget \
+        unzip \
+        python3 \
+        python-is-python3 \
+        python3-pip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copia de archivos y configuración
+COPY /home_files /home
+WORKDIR /home
+
+# Comando de inicio (ajusta según tu imagen)
+CMD ["bash", "omega_alpha.sh"]
