@@ -27,7 +27,7 @@ from scapy.all import ARP, Ether, srp
 pth = os.getcwd()
 
 #container version - use latest for production
-quayver = '0.3.0'
+quayver = '0.4.0'
 
 #region aux functions and classes
 class WorkerClass:
